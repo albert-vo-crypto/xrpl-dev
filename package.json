@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "express": "^4.17.3",
+    "xrpl": "^2.1.1"
+  }
+}
