@@ -4,106 +4,19 @@
 <script>
 if (typeof module !== "undefined") var xrpl = require('xrpl')
 
-//***************************
-//***************************
-//** Get NFT Faucet *************
-//***************************
-async function wait_for_seq(network_url, address) {
-  const api = new xrpl.Client(network_url)
-  await api.connect()
-  let response;
-  while (true) {
-    try {
-      response = await api.request({
-        command: "account_info",
-        account: address,
-        ledger_index: "validated"
-      })
-      break
-    } catch(e) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-    }
-  }
-  console.log(response)
-  $("#sequence").html('<h3>Sequence Number</h3> '+response.result.account_data.Sequence)
-  api.disconnect()
-}
-
-
-function rippleTestNetCredentials(url, altnet_name) {
-
-  const credentials = $('#your-credentials')
-  const address = $('#address')
-  const secret = $('#secret')
-  const balance = $('#balance')
-  const sequence = $('#sequence')
-  const loader = $('#loader')
-
-  //reset the fields initially and for re-generation
-  credentials.hide()
-  address.html('')
-  secret.html('')
-  balance.html('')
-  sequence.html('')
-  loader.css('display', 'inline')
-
-  
-  //call the alt-net and get key generations
-  $.ajax({
-    url: url,
-    type: 'POST',
-    dataType: 'json',
-    success: function(data) {
-      //hide the loader and show results
-      loader.hide();
-      credentials.hide().html('<h2>Your '+altnet_name+' Credentials</h2>').fadeIn('fast')
-      address.hide().html('<h3>Address</h3> ' +
-        data.account.address).fadeIn('fast')
-      secret.hide().html('<h3>Secret</h3> ' +
-        data.account.secret).fadeIn('fast')
-      balance.hide().html('<h3>Balance</h3> ' +
-        Number(data.balance).toLocaleString('en') + ' XRP').fadeIn('fast')
-      sequence.html('<h3>Sequence</h3> <img class="throbber" src="assets/img/xrp-loader-96.png"> Waiting...').fadeIn('fast')
-      if (altnet_name=="Testnet") {
-        wait_for_seq("wss://s.altnet.rippletest.net:51233", data.account.address)
-      } else if (altnet_name=="NFT-Devnet") {
-        wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", data.account.address)
-      } else {
-        wait_for_seq("wss://s.devnet.rippletest.net:51233", data.account.address)
-      }
-
-    },
-    error: function() {
-      loader.hide();
-      alert("There was an error with the "+altnet_name+" faucet. Please try again.");
-    }
-  })
-}
-
-$(document).ready(function() {
-  function testnet_click(evt) {
-    rippleTestNetCredentials("https://faucet.altnet.rippletest.net/accounts",
-      "Testnet")
-  }
-  function devnet_click(evt) {
-    rippleTestNetCredentials("https://faucet.devnet.rippletest.net/accounts",
-      "Devnet")
-  }
-  function nftnet_click(evt) {
-    rippleTestNetCredentials("https://faucet-nft.ripple.com/accounts",
-      "NFT-Devnet")
-  }
-
-  $('#testnet-creds-button').click(testnet_click)
-  $('#devnet-creds-button').click(devnet_click)
-  $('#nftnet-creds-button').click(nftnet_click)
-})
-
-
 
 //***************************
 //** Mint Token *************
 //***************************
+// import { createRequire } from 'module';
+// const require = createRequire(import.meta.url);
+// require('dotenv').config();
+// const sellerSecret = process.env.SELLER_SECRET
+// const buyerSecret = process.env.BUYER_SECRET
+// console.log(sellerSecret)
+// console.log(buyerSecret)
+//var api_key = process.env.API_KEY;
+//console.log("api_key = ", api_key)
 
 async function mintToken() {
 	const wallet = xrpl.Wallet.fromSeed(secret.value)
@@ -457,31 +370,36 @@ async function acceptBuyOffer() {
 
 <title>XRPL EasyBank NFT App</title>
 </head>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript">
+  $(function() {
+    $("#Plant_Name").autocomplete({
+      source: "plantNamesAutocomplete", 
+      minLength: 3,
+      select: function(event, ui) {
+        this.value = ui.item.label;
+        $("#Plant_ID").val(ui.item.value);
+        return false;
+      }
+    });
+
+  });
+</script>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+ <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <body>
-<h1>XRP Faucets</h1>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <div class="content">
-    <p>Ripple runs these parallel XRP Ledger test networks Devnet to provide a testing platform for any software products built on the XRP Ledger without using real funds.</p>
-    <p>These funds are intended for <strong>testing</strong> only. The Testnet ledger and balances will be reset approximately every 90 days, or when otherwise necessary. Devnet funds may be reset without warning as needed.</p>
-    <p>Testnet and Devnet balances are separate. As a precaution, do not use the Testnet or Devnet credentials on the Mainnet.</p>
-    <div class="btn-toolbar" role="toolbar" aria-label="Button">
-      <button id="nftnet-creds-button" class="btn btn-primary mb-2" onClick="rippleTestNetCredentials('https://faucet-nft.ripple.com/accounts','NFT-Devnet')">Generate NFT-Devnet credentials</button>
-    </div><!--/.btn-toolbar-->
-    <div id='your-credentials'></div>
-    <div id='loader' style="display: none;"> Generating Keys...</div>
-    <div id='address'></div>
-    <div id='secret'></div>
-    <div id='balance'></div>
-    <div id='sequence'> <div id='loader' style="display: none;"><img class="throbber" > Waiting...</div></div>
-  </div>
-<hr>
 <h1>XRPL EasyBank NFT Seller</h1>
 
+<form id="theForm">
 <table>
   <tr>
     <td align="right">Account</td>
-    <td><input type="text" id="account" value="" size="40" /></td>
+    <td><input type="text" id="account" value="rfd3Yyp8uWUVrRRYiRgQPS6tPmNcm3ftjJ" size="40" /></td>
   </tr>
+  <input id="myFakeSecret1" type="hidden" value="sngTuiJ5ZBhdqWxfbfpXdC9G7ZAxY">
   <tr>
     <td align="right">Secret</td>
     <td><input type="text" id="secret" value="" size="40" /></td>
@@ -528,7 +446,7 @@ value = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf4dfuylqabf3oclgtqy55fbzdi" siz
   </p>
 </form>
 
-
+<hr>
 
 </body>
 </html>
