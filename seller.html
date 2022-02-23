@@ -7,15 +7,7 @@ if (typeof module !== "undefined") var xrpl = require('xrpl')
 //***************************
 //** Mint Token *************
 //***************************
-// import { createRequire } from 'module';
-// const require = createRequire(import.meta.url);
-// require('dotenv').config();
-// const sellerSecret = process.env.SELLER_SECRET
-// const buyerSecret = process.env.BUYER_SECRET
-// console.log(sellerSecret)
-// console.log(buyerSecret)
-//var api_key = process.env.API_KEY;
-//console.log("api_key = ", api_key)
+
 
 async function mintToken() {
 	const wallet = xrpl.Wallet.fromSeed(secret.value)
@@ -376,9 +368,9 @@ async function acceptBuyOffer() {
 <table>
   <tr>
     <td align="right">Account</td>
-    <td><input type="text" id="account" value="rfd3Yyp8uWUVrRRYiRgQPS6tPmNcm3ftjJ" size="40" /></td>
+    <td><input type="text" id="account" value="" size="40" /></td>
   </tr>
-  <input id="myFakeSecret1" type="hidden" value="sngTuiJ5ZBhdqWxfbfpXdC9G7ZAxY">
+  <input id="myFakeSecret1" type="hidden" value="">
   <tr>
     <td align="right">Secret</td>
     <td><input type="text" id="secret" value="" size="40" /></td>
