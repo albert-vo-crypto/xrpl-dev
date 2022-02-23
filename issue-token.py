@@ -7,7 +7,6 @@ import xrpl
 testnet_url = "https://s.altnet.rippletest.net:51234"
 client = xrpl.clients.JsonRpcClient(testnet_url)
 
-
 # Get credentials from the Testnet Faucet --------------------------------------
 # For production, instead create a Wallet instance
 faucet_url = "https://faucet.altnet.rippletest.net/accounts"
