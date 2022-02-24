@@ -5,6 +5,7 @@
 if (typeof module !== "undefined") var xrpl = require('xrpl')
 
 
+
 (function (logger) {
     console.old = console.log;
     console.log = function () {
@@ -37,6 +38,7 @@ if (typeof module !== "undefined") var xrpl = require('xrpl')
 // .log-object,
 // .log-string {color: orange;}
 // .log-number {color: cyan;}
+
 //***************************
 //** Mint Token *************
 //***************************
@@ -427,14 +429,39 @@ async function acceptBuyOffer() {
     </script> -->
 <title>XRPL EasyBank NFT App</title>
 </head>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript">
+  $(function() {
+    $("#Plant_Name").autocomplete({
+      source: "plantNamesAutocomplete", 
+      minLength: 3,
+      select: function(event, ui) {
+        this.value = ui.item.label;
+        $("#Plant_ID").val(ui.item.value);
+        return false;
+      }
+    });
+
+  });
+</script>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+ <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <body>
 <h1>XRPL EasyBank NFT Seller</h1>
+
 <form id="theForm">
 <pre id="logger"></pre>
 <script>
   !function(o){console.old=console.log,console.log=function(){var n,e,t="";for(e=0;e<arguments.length;e++)t+='<span class="log-'+typeof(n=arguments[e])+'">',"object"==typeof n&&"object"==typeof JSON&&"function"==typeof JSON.stringify?t+=JSON.stringify(n):t+=n,t+="</span>&nbsp;";o.innerHTML+=t+"<br>",console.old.apply(void 0,arguments)}}
   (document.body);
 </script>
+=======
+
+<form id="theForm">
+
 <table>
   <tr>
     <td align="right">Account</td>
