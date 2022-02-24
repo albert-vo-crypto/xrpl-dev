@@ -5,18 +5,43 @@
 if (typeof module !== "undefined") var xrpl = require('xrpl')
 
 
+
+(function (logger) {
+    console.old = console.log;
+    console.log = function () {
+        var output = "", arg, i;
+
+        for (i = 0; i < arguments.length; i++) {
+            arg = arguments[i];
+            output += "<span class=\"log-" + (typeof arg) + "\">";
+
+            if (
+                typeof arg === "object" &&
+                typeof JSON === "object" &&
+                typeof JSON.stringify === "function"
+            ) {
+                output += JSON.stringify(arg);   
+            } else {
+                output += arg;   
+            }
+
+            output += "</span>&nbsp;";
+        }
+
+        logger.innerHTML += output + "<br>";
+        console.old.apply(undefined, arguments);
+    };
+})(document.getElementById("logger"));
+// body {background: #333;}
+// .log-boolean,
+// .log-undefined {color: magenta;}
+// .log-object,
+// .log-string {color: orange;}
+// .log-number {color: cyan;}
+
 //***************************
 //** Mint Token *************
 //***************************
-// import { createRequire } from 'module';
-// const require = createRequire(import.meta.url);
-// require('dotenv').config();
-// const sellerSecret = process.env.SELLER_SECRET
-// const buyerSecret = process.env.BUYER_SECRET
-// console.log(sellerSecret)
-// console.log(buyerSecret)
-//var api_key = process.env.API_KEY;
-//console.log("api_key = ", api_key)
 
 async function mintToken() {
 	const wallet = xrpl.Wallet.fromSeed(secret.value)
@@ -42,11 +67,16 @@ async function mintToken() {
 		account: wallet.classicAddress
 	})
 	console.log(nfts)
+  // Display console log response in web page
+  //alert(nfts)
 
 	// Check transaction results -------------------------------------------------
 	console.log("Transaction result:", tx.result.meta.TransactionResult)
 	console.log("Balance changes:",
 	  JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
+  //alert ("Transaction result:", tx.result.meta.TransactionResult)
+  //alert("Balance changes:",
+	//  JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
 	client.disconnect()
 } //End of mintToken
 
@@ -91,6 +121,7 @@ async function burnToken() {
 	account: wallet.classicAddress
   })
   console.log(nfts)
+  
   // Check transaction results -------------------------------------------------
   console.log("Transaction result:", tx.result.meta.TransactionResult)
   console.log("Balance changes:",
@@ -367,7 +398,35 @@ async function acceptBuyOffer() {
   // End of submitTransaction()
 }
 </script>
+<!-- <div id="logger" class="web_console"></div>
 
+    <script type="text/javascript">
+
+        // Overriding console object
+        var console = {};
+
+        // Getting div to insert logs
+        var logger = document.getElementById("logger");
+
+        // Adding log method from our console object
+        console.log = function(text)
+        {
+            var element = document.createElement("div");
+            var txt = document.createTextNode(text);
+
+            element.appendChild(txt);
+            logger.appendChild(element);
+        }
+
+        // testing
+        console.log("Hello World...");
+        console.log("WOW");
+
+        /**
+            console.log prints the message in the page instead browser console, useful to programming and debugging JS using a Android phone
+
+        */
+    </script> -->
 <title>XRPL EasyBank NFT App</title>
 </head>
 
@@ -394,12 +453,21 @@ async function acceptBuyOffer() {
 <h1>XRPL EasyBank NFT Seller</h1>
 
 <form id="theForm">
+<pre id="logger"></pre>
+<script>
+  !function(o){console.old=console.log,console.log=function(){var n,e,t="";for(e=0;e<arguments.length;e++)t+='<span class="log-'+typeof(n=arguments[e])+'">',"object"==typeof n&&"object"==typeof JSON&&"function"==typeof JSON.stringify?t+=JSON.stringify(n):t+=n,t+="</span>&nbsp;";o.innerHTML+=t+"<br>",console.old.apply(void 0,arguments)}}
+  (document.body);
+</script>
+=======
+
+<form id="theForm">
+
 <table>
   <tr>
     <td align="right">Account</td>
-    <td><input type="text" id="account" value="rfd3Yyp8uWUVrRRYiRgQPS6tPmNcm3ftjJ" size="40" /></td>
+    <td><input type="text" id="account" value="" size="40" /></td>
   </tr>
-  <input id="myFakeSecret1" type="hidden" value="sngTuiJ5ZBhdqWxfbfpXdC9G7ZAxY">
+  <input id="myFakeSecret1" type="hidden" value="">
   <tr>
     <td align="right">Secret</td>
     <td><input type="text" id="secret" value="" size="40" /></td>
