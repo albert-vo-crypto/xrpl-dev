@@ -365,8 +365,9 @@ async function mintToken() {
 	const wallet = xrpl.Wallet.fromSeed(secret1.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("Connected to Sandbox")
-	console.log("Mint Token")
+	
+	console.log("----------------Mint Token----------------")
+    
 	// Note that you must convert the token URL to a hexadecimal
 	// value for this transaction.
 	// ----------------------------------------------------------
@@ -419,8 +420,9 @@ async function burnToken() {
   const wallet = xrpl.Wallet.fromSeed(secret1.value)
   const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
   await client.connect()
-  console.log("Connected to Sandbox")
-  console.log("Burn Token")
+  
+  console.log("----------------Burn Token----------------")
+  
   // Prepare transaction -------------------------------------------------------
   const transactionBlob = {
       "TransactionType": "NFTokenBurn",
@@ -451,8 +453,8 @@ async function createSellOffer() {
 	const wallet = xrpl.Wallet.fromSeed(secret1.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("Connected to Sandbox")
-    console.log("Create Sell Offer")
+	console.log("----------------Create Sell Offer----------------")
+    
  // Prepare transaction -------------------------------------------------------
   const transactionBlob = {
       	"TransactionType": "NFTokenCreateOffer",
@@ -506,8 +508,9 @@ async function createBuyOffer() {
 	const wallet = xrpl.Wallet.fromSeed(secret.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("Connected to Sandbox")
-    console.log("Create Buy Offer")
+
+    console.log("----------------Create buy Offer----------------")
+    
  // Prepare transaction -------------------------------------------------------
   const transactionBlob = {
       	"TransactionType": "NFTokenCreateOffer",
@@ -562,8 +565,9 @@ async function cancelOffer() {
 	const wallet = xrpl.Wallet.fromSeed(secret1.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("Connected to Sandbox")
-    console.log("Cancel Offer")
+	
+    console.log("----------------Cancel Offer----------------")
+    
 	const tokenID = tokenOfferIndex.value
 	const tokenIDs = [tokenID]
 
@@ -619,8 +623,8 @@ async function getOffers() {
 	const wallet = xrpl.Wallet.fromSeed(secret1.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("Connected to Sandbox")
-    console.log("Get Offers")
+	console.log("----------------Get Offers----------------")
+
     console.log("***Sell Offers***")
     let nftSellOffers
       try {
@@ -659,8 +663,8 @@ async function acceptSellOffer() {
 	const wallet = xrpl.Wallet.fromSeed(secret1.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("Connected to Sandbox")
-    console.log("Accept Sell Offer")
+	console.log("----------------Accept Sell Offer----------------")
+
  // Prepare transaction -------------------------------------------------------
   const transactionBlob = {
       	"TransactionType": "NFTokenAcceptOffer",
@@ -692,8 +696,8 @@ async function acceptBuyOffer() {
 	const wallet = xrpl.Wallet.fromSeed(secret1.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("Connected to Sandbox")
-    console.log("Accept Buy Offer")
+	console.log("----------------Accept Buy Offer----------------")
+
  // Prepare transaction -------------------------------------------------------
   const transactionBlob = {
       	"TransactionType": "NFTokenAcceptOffer",
