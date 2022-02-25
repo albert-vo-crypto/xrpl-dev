@@ -2,6 +2,11 @@
   "dependencies": {
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
+    "fs-extra": "^10.0.1",
+    "ipfs-core": "^0.14.1",
+    "ipfs-only-hash": "^4.0.0",
+    "js-yaml": "^4.1.0",
+    "ripple-lib": "^1.10.0",
     "xrpl": "^2.1.1"
   }
 }
