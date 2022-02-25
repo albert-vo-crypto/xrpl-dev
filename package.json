@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "console-log-div": "^0.6.3",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "fs-extra": "^10.0.1",
