@@ -1,7 +1,7 @@
 # xrpl-dev
 
-## XRPL NFT Marketplace for the XRP ledger
-## POC on XRP Ledger Testnet
+## XRPL NFT Marketplace for the XRP Ledger
+##      POC on XRP Ledger Devnet
 
 
 ## Build
