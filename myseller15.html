@@ -281,7 +281,8 @@ async function wait_for_seq(network_url, address) {
     }
   }
   console.log("\n\n----------------Get XRPL NFT Seller's Wallet Account Info----------------")
-  console.log(response)
+  console.log(JSON.stringify(response, null, 2))
+  
   $("#sequence").html('<h3>Sequence Number</h3> '+response.result.account_data.Sequence)
   api.disconnect()
 }
@@ -405,8 +406,8 @@ async function mintToken() {
 		method: "account_nfts",
 		account: wallet.classicAddress
 	})
-	console.log(nfts)
-
+	// console.log(nfts)
+  console.log(JSON.stringify(nfts, null, 2))
 	// Check transaction results -------------------------------------------------
 	console.log("Transaction result:", tx.result.meta.TransactionResult)
 	console.log("Balance changes:",
@@ -427,7 +428,8 @@ async function getTokens() {
 		method: "account_nfts",
 		account: wallet.classicAddress
 	})
-	console.log(nfts)
+	// console.log(nfts)
+  console.log(JSON.stringify(nfts, null, 2))
 	client.disconnect()
 } //End of getTokens
 
