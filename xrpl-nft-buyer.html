@@ -280,7 +280,7 @@ async function wait_for_seq(network_url, address) {
       await new Promise(resolve => setTimeout(resolve, 1000))
     }
   }
-  console.log("\n\n----------------Get XRPL NFT Seller's Wallet Account Info----------------")
+  console.log("\n\n----------------Get XRPL NFT Buyer's Wallet Account Info----------------")
   console.log(JSON.stringify(response, null, 2))
   
   $("#sequence").html('<h3>Sequence Number</h3> '+response.result.account_data.Sequence)
@@ -344,7 +344,7 @@ function rippleTestNetCredentials(url, altnet_name) {
         }
         // $('#account').val(data.account.address);
         // $('#secret1').val(data.account.secret);
-        console.log("\n\n----------------Connect XRPL NFT Seller's Wallet----------------")
+        console.log("\n\n----------------Connect XRPL NFT Buyer's Wallet----------------")
         console.log("data.account.address = ", data.account.address)
         // console.log("#account = ", $('#account'))
         console.log("data.account.secret = ", data.account.secret)
@@ -777,7 +777,7 @@ async function acceptBuyOffer() {
       <p>Ripple runs these parallel XRP Ledger test networks Devnet to provide a testing platform for any software products built on the XRP Ledger without using real funds.</p>
       <p>These funds are intended for <strong>testing</strong> only.</p>
       <div class="btn-toolbar" role="toolbar" aria-label="Button">
-        <button id="nftnet-creds-button" class="btn btn-primary mb-2" onClick="rippleTestNetCredentials('https://faucet-nft.ripple.com/accounts','NFT-Devnet')">Connect XRPL NFT Seller's Wallet</button>
+        <button id="nftnet-creds-button" class="btn btn-primary mb-2" onClick="rippleTestNetCredentials('https://faucet-nft.ripple.com/accounts','NFT-Devnet')">Connect XRPL NFT Buyer's Wallet</button>
       </div><!--/.btn-toolbar-->
       <div id='your-credentials'></div>
       <div id='loader' style="display: none;"> Getting Wallet Credentials...</div>
@@ -790,7 +790,7 @@ async function acceptBuyOffer() {
   <hr>
 
 
-<h1>XRPL NFT Seller Wallet</h1>
+<h1>XRPL NFT Buyer Wallet</h1>
 <form id="theForm">
 
 <table>
