@@ -6,15 +6,15 @@
 
 ## Build
 
-Install nodejs
-npm install
-npm install xrpl
-npm install express
+Install nodejs <br />
+npm install  <br />
+npm install xrpl  <br />
+npm install express  <br />
 
 ## Run
-node xrpl-nft-seller.js
+node xrpl-nft-seller.js  <br />
 
-node xrpl-nft-buyer.js
+node xrpl-nft-buyer.js  <br />
 
 
 
