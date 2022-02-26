@@ -417,6 +417,9 @@ async function mintToken() {
 	console.log("Transaction result:", tx.result.meta.TransactionResult)
 	console.log("Balance changes:",
 	  JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
+  // REMAINING BALANCE
+  // console.log("Remaining Balance:",
+	//   JSON.stringify(xrpl.getBalance(tx.result.meta), null, 2))  
 	client.disconnect()
 } //End of mintToken
 
