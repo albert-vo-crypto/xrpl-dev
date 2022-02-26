@@ -280,6 +280,7 @@ async function wait_for_seq(network_url, address) {
       await new Promise(resolve => setTimeout(resolve, 1000))
     }
   }
+  console.log("----------------Get XRPL NFT Seller Account Info----------------")
   console.log(response)
   $("#sequence").html('<h3>Sequence Number</h3> '+response.result.account_data.Sequence)
   api.disconnect()
