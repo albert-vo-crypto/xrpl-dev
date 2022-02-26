@@ -5,7 +5,7 @@ const xrpl = require("xrpl")
 
 
 app.get('/',function(req,res){
-  res.sendFile(path.join(__dirname+'/myseller15.html'));
+  res.sendFile(path.join(__dirname+'/xrpl-nft-seller.html'));
   //__dirname : It will resolve to your project folder.
 });
 app.listen(3011);
