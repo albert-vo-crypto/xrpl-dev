@@ -422,8 +422,7 @@ async function getTokens() {
 	const wallet = xrpl.Wallet.fromSeed(secret1.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("Connected to Sandbox")
-    console.log("Get Tokens")
+	console.log("\n\n----------------Get Tokens----------------")
 	const nfts = await client.request({
 		method: "account_nfts",
 		account: wallet.classicAddress
