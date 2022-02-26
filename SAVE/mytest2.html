@@ -1,0 +1,42 @@
+
+
+
+<html>
+<head>
+<script>
+    document.getElementById("cmtx_comment").value = localStorage.getItem("comment");
+    async function saveComment() {
+        var comment = document.getElementById("cmtx_comment").value;
+        if (comment == "") {
+            alert("Please enter a comment in first!");
+            return false;
+        }
+
+        localStorage.setItem("comment", comment);
+        alert("Your comment has been saved!");
+
+        var account = document.getElementById("account").value;
+        if (account == "") {
+            alert("Please enter account in first!");
+            return false;
+        }
+
+        localStorage.setItem("account", account);
+        alert("Your account has been saved!");
+
+        location.reload();
+        return false;
+        //return true;
+    }
+</script>
+</head>
+<form method="post" action="" onSubmit="return saveComment();">
+    <tr>
+    <input type="text" name="cmtx_comment" id="cmtx_comment" value="" />
+    </tr>
+    <tr>
+    <input type="text" name="account" id="account" value="" />
+    </tr>form>
+    <input type="submit" value="Save" />
+</form>
+</html>

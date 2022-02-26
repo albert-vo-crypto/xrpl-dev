@@ -1,0 +1,726 @@
+<html>
+<head>
+<script src="https://unpkg.com/xrpl@2.0.0/build/xrpl-latest-min.js"></script>
+<script>
+if (typeof module !== "undefined") var xrpl = require('xrpl')
+(function (logger) {
+    console.old = console.log;
+    console.log = function () {
+        var output = "", arg, i;
+
+        for (i = 0; i < arguments.length; i++) {
+            arg = arguments[i];
+            output += "<span class=\"log-" + (typeof arg) + "\">";
+
+            if (
+                typeof arg === "object" &&
+                typeof JSON === "object" &&
+                typeof JSON.stringify === "function"
+            ) {
+                output += JSON.stringify(arg);   
+            } else {
+                output += arg;   
+            }
+
+            output += "</span>&nbsp;";
+        }
+
+        logger.innerHTML += output + "<br>";
+        console.old.apply(undefined, arguments);
+    };
+})(document.getElementById("logger"));
+
+//***************************
+//** Get NFT Faucet *************
+//***************************
+async function wait_for_seq(network_url, address) {
+  const api = new xrpl.Client(network_url)
+  await api.connect()
+  let response;
+  while (true) {
+    try {
+      response = await api.request({
+        command: "account_info",
+        account: address,
+        ledger_index: "validated"
+      })
+      break
+    } catch(e) {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+  }
+  console.log(response)
+  $("#sequence").html('<h3>Sequence Number</h3> '+response.result.account_data.Sequence)
+  api.disconnect()
+}
+
+
+function rippleTestNetCredentials(url, altnet_name) {
+
+  const credentials = $('#your-credentials')
+  const address = $('#address')
+  const secret = $('#secret')
+  const balance = $('#balance')
+  const sequence = $('#sequence')
+  const loader = $('#loader')
+
+  //reset the fields initially and for re-generation
+  credentials.hide()
+  address.html('')
+  secret.html('')
+  balance.html('')
+  sequence.html('')
+  loader.css('display', 'inline')
+
+  console.log("Connect to Wallet")
+  //call the alt-net and get key generations
+  $.ajax({
+    url: url,
+    type: 'POST',
+    dataType: 'json',
+    success: function(data) {
+      //hide the loader and show results
+      loader.hide();
+      credentials.hide().html('<h2>Your '+altnet_name+' Wallet Credentials</h2>').fadeIn('fast')
+      address.hide().html('<h3>Address</h3> ' +
+        data.account.address).fadeIn('fast')
+      secret.hide().html('<h3>Secret</h3> ' +
+        data.account.secret).fadeIn('fast')
+      balance.hide().html('<h3>Balance</h3> ' +
+        Number(data.balance).toLocaleString('en') + ' XRP').fadeIn('fast')
+      sequence.html('<h3>Sequence</h3> <img class="throbber" src="assets/img/xrp-loader-96.png"> Waiting...').fadeIn('fast')
+      if (altnet_name=="Testnet") {
+        wait_for_seq("wss://s.altnet.rippletest.net:51233", data.account.address)
+      } else if (altnet_name=="NFT-Devnet") {
+        wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", data.account.address)
+      } else {
+        wait_for_seq("wss://s.devnet.rippletest.net:51233", data.account.address)
+      }
+
+    },
+    error: function() {
+      loader.hide();
+      console.log("ERROR:  Connect to Wallet")
+      alert("There was an error with the "+altnet_name+" faucet. Please try again.");
+    }
+  })
+}
+
+$(document).ready(function() {
+  function testnet_click(evt) {
+    rippleTestNetCredentials("https://faucet.altnet.rippletest.net/accounts",
+      "Testnet")
+  }
+  function devnet_click(evt) {
+    rippleTestNetCredentials("https://faucet.devnet.rippletest.net/accounts",
+      "Devnet")
+  }
+  function nftnet_click(evt) {
+    rippleTestNetCredentials("https://faucet-nft.ripple.com/accounts",
+      "NFT-Devnet")
+  }
+
+  $('#testnet-creds-button').click(testnet_click)
+  $('#devnet-creds-button').click(devnet_click)
+  $('#nftnet-creds-button').click(nftnet_click)
+})
+
+
+</script>
+<script>
+//***************************
+//** Mint Token *************
+//***************************
+
+async function mintToken() {
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
+	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
+	await client.connect()
+	console.log("Connected to Sandbox")
+
+	// Note that you must convert the token URL to a hexadecimal
+	// value for this transaction.
+	// ----------------------------------------------------------
+	const transactionBlob = {
+		TransactionType: "NFTokenMint",
+		Account: wallet.classicAddress,
+		URI: xrpl.convertStringToHex(tokenUrl.value),
+		Flags: parseInt(flags.value),
+		TokenTaxon: 0 //Required, but if you have no use for it, set to zero.
+	}
+	// Submit signed blob --------------------------------------------------------
+	const tx = await client.submitAndWait(transactionBlob,{wallet})
+
+	const nfts = await client.request({
+		method: "account_nfts",
+		account: wallet.classicAddress
+	})
+	console.log(nfts)
+  // Display console log response in web page
+  //alert(nfts)
+
+	// Check transaction results -------------------------------------------------
+	console.log("Transaction result:", tx.result.meta.TransactionResult)
+	console.log("Balance changes:",
+	  JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
+  //alert ("Transaction result:", tx.result.meta.TransactionResult)
+  //alert("Balance changes:",
+	//  JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
+	client.disconnect()
+} //End of mintToken
+
+//***************************
+//** Get Tokens *************
+//***************************
+
+async function getTokens() {
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
+	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
+	await client.connect()
+	console.log("Connected to Sandbox")
+	const nfts = await client.request({
+		method: "account_nfts",
+		account: wallet.classicAddress
+	})
+	console.log(nfts)
+	client.disconnect()
+} //End of getTokens
+
+//***************************
+//** Burn Token *************
+//***************************
+
+async function burnToken() {
+  const wallet = xrpl.Wallet.fromSeed(secret.value)
+  const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
+  await client.connect()
+  console.log("Connected to Sandbox")
+
+  // Prepare transaction -------------------------------------------------------
+  const transactionBlob = {
+      "TransactionType": "NFTokenBurn",
+      "Account": wallet.classicAddress,
+      "TokenID": tokenId.value
+  }
+
+  // Submit signed blob --------------------------------------------------------
+  const tx = await client.submitAndWait(transactionBlob,{wallet})
+  const nfts = await client.request({
+	method: "account_nfts",
+	account: wallet.classicAddress
+  })
+  console.log(nfts)
+  
+  // Check transaction results -------------------------------------------------
+  console.log("Transaction result:", tx.result.meta.TransactionResult)
+  console.log("Balance changes:",
+    JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
+  client.disconnect()
+}
+// End of burnToken()
+
+//********************************
+//** Create Sell Offer ***********
+//********************************
+
+async function createSellOffer() {
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
+	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
+	await client.connect()
+	console.log("Connected to Sandbox")
+
+ // Prepare transaction -------------------------------------------------------
+  const transactionBlob = {
+      	"TransactionType": "NFTokenCreateOffer",
+      	"Account": wallet.classicAddress,
+      	"TokenID": tokenId.value,
+      	"Amount": amount.value,
+      	"Flags": parseInt(flags.value)
+  }
+
+  // Submit signed blob --------------------------------------------------------
+
+  const tx = await client.submitAndWait(transactionBlob,{wallet})//AndWait
+
+
+  console.log("***Sell Offers***")
+  let nftSellOffers
+    try {
+	    nftSellOffers = await client.request({
+		method: "nft_sell_offers",
+		tokenid: tokenId.value
+	  })
+	  } catch (err) {
+	    console.log("No sell offers.")
+	}
+  console.log(JSON.stringify(nftSellOffers,null,2))
+  console.log("***Buy Offers***")
+  let nftBuyOffers
+  try {
+    nftBuyOffers = await client.request({
+	method: "nft_buy_offers",
+	tokenid: tokenId.value })
+  } catch (err) {
+    console.log("No buy offers.")
+  }
+  console.log(JSON.stringify(nftBuyOffers,null,2))
+
+  // Check transaction results -------------------------------------------------
+  console.log("Transaction result:",
+    JSON.stringify(tx.result.meta.TransactionResult, null, 2))
+  console.log("Balance changes:",
+    JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
+  client.disconnect()
+  // End of createSellOffer()
+}
+//********************************
+//** Create Buy Offer ***********
+//********************************
+
+async function createBuyOffer() {
+
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
+	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
+	await client.connect()
+	console.log("Connected to Sandbox")
+
+ // Prepare transaction -------------------------------------------------------
+  const transactionBlob = {
+      	"TransactionType": "NFTokenCreateOffer",
+      	"Account": wallet.classicAddress,
+      	"Owner": owner.value,
+      	"TokenID": tokenId.value,
+      	"Amount": amount.value,
+      	"Flags": parseInt(flags.value)
+  }
+
+  // Submit signed blob --------------------------------------------------------
+  const tx = await client.submitAndWait(transactionBlob,{wallet})
+
+  console.log("***Sell Offers***")
+  let nftSellOffers
+    try {
+	    nftSellOffers = await client.request({
+		method: "nft_sell_offers",
+		tokenid: tokenId.value
+	  })
+	  } catch (err) {
+	    console.log("No sell offers.")
+	}
+  console.log(JSON.stringify(nftSellOffers,null,2))
+  console.log("***Buy Offers***")
+  let nftBuyOffers
+  try {
+    nftBuyOffers = await client.request({
+	method: "nft_buy_offers",
+	tokenid: tokenId.value })
+  } catch (err) {
+    console.log("No buy offers.")
+  }
+  console.log(JSON.stringify(nftBuyOffers,null,2))
+
+
+  // Check transaction results -------------------------------------------------
+  console.log("Transaction result:",
+    JSON.stringify(tx.result.meta.TransactionResult, null, 2))
+  console.log("Balance changes:",
+    JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
+  client.disconnect()
+  // End of createBuyOffer()
+}
+
+//***************************
+//** Cancel Offer ***********
+//***************************
+
+async function cancelOffer() {
+
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
+	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
+	await client.connect()
+	console.log("Connected to Sandbox")
+
+	const tokenID = tokenOfferIndex.value
+	const tokenIDs = [tokenID]
+
+ // Prepare transaction -------------------------------------------------------
+  const transactionBlob = {
+      	"TransactionType": "NFTokenCancelOffer",
+      	"Account": wallet.classicAddress,
+      	"TokenIDs": tokenIDs
+  }
+
+  // Submit signed blob --------------------------------------------------------
+  const tx = await client.submitAndWait(transactionBlob,{wallet})
+
+
+  console.log("***Sell Offers***")
+  let nftSellOffers
+    try {
+	    nftSellOffers = await client.request({
+		method: "nft_sell_offers",
+		tokenid: tokenId.value
+	  })
+	  } catch (err) {
+	    console.log("No sell offers.")
+	}
+  console.log(JSON.stringify(nftSellOffers,null,2))
+  console.log("***Buy Offers***")
+  let nftBuyOffers
+  try {
+    nftBuyOffers = await client.request({
+	method: "nft_buy_offers",
+	tokenid: tokenId.value })
+  } catch (err) {
+    console.log("No buy offers.")
+  }
+  console.log(JSON.stringify(nftBuyOffers,null,2))
+
+  // Check transaction results -------------------------------------------------
+
+  console.log("Transaction result:",
+    JSON.stringify(tx.result.meta.TransactionResult, null, 2))
+  console.log("Balance changes:",
+    JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
+
+  client.disconnect()
+  // End of cancelOffer()
+}
+//***************************
+//** Get Offers *************
+//***************************
+
+async function getOffers() {
+
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
+	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
+	await client.connect()
+	console.log("Connected to Sandbox")
+    console.log("***Sell Offers***")
+    let nftSellOffers
+      try {
+	    nftSellOffers = await client.request({
+		method: "nft_sell_offers",
+		tokenid: tokenId.value
+	  })
+	  } catch (err) {
+	    console.log("No sell offers.")
+	}
+    console.log(JSON.stringify(nftSellOffers,null,2))
+    console.log("***Buy Offers***")
+    let nftBuyOffers
+    try {
+      nftBuyOffers = await client.request({
+  	  method: "nft_buy_offers",
+	  tokenid: tokenId.value })
+    } catch (err) {
+      console.log("No buy offers.")
+  }
+  console.log(JSON.stringify(nftBuyOffers,null,2))
+  client.disconnect()
+  // End of getOffers()
+}
+//***************************
+//** Accept Sell Offer ******
+//***************************
+
+async function acceptSellOffer() {
+
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
+	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
+	await client.connect()
+	console.log("Connected to Sandbox")
+
+ // Prepare transaction -------------------------------------------------------
+  const transactionBlob = {
+      	"TransactionType": "NFTokenAcceptOffer",
+      	"Account": wallet.classicAddress,
+      	"SellOffer": tokenOfferIndex.value,
+  }
+  // Submit signed blob --------------------------------------------------------
+  const tx = await client.submitAndWait(transactionBlob,{wallet})
+  const nfts = await client.request({
+	method: "account_nfts",
+	account: wallet.classicAddress
+  })
+  console.log(JSON.stringify(nfts,null,2))
+
+  // Check transaction results -------------------------------------------------
+  console.log("Transaction result:",
+    JSON.stringify(tx.result.meta.TransactionResult, null, 2))
+  console.log("Balance changes:",
+    JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
+  client.disconnect()
+  // End of acceptSellOffer()
+}
+//***************************
+//** Accept Buy Offer ******
+//***************************
+
+async function acceptBuyOffer() {
+
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
+	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
+	await client.connect()
+	console.log("Connected to Sandbox")
+
+ // Prepare transaction -------------------------------------------------------
+  const transactionBlob = {
+      	"TransactionType": "NFTokenAcceptOffer",
+      	"Account": wallet.classicAddress,
+      	"BuyOffer": tokenOfferIndex.value
+  }
+  // Submit signed blob --------------------------------------------------------
+  const tx = await client.submitAndWait(transactionBlob,{wallet})
+  const nfts = await client.request({
+	method: "account_nfts",
+	account: wallet.classicAddress
+  })
+  console.log(JSON.stringify(nfts,null,2))
+
+  // Check transaction results -------------------------------------------------
+  console.log("Transaction result:",
+      JSON.stringify(tx.result.meta.TransactionResult, null, 2))
+  console.log("Balance changes:",
+      JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
+  client.disconnect()
+  // End of submitTransaction()
+}
+</script>
+<script>
+    // In browsers, use a <script> tag. In Node.js, uncomment the following line:
+// const xrpl = require('xrpl')
+
+// Wrap code in an async function so we can use await
+async function main() {
+
+// Define the network client
+// const client = new xrpl.Client("wss://s.altnet.rippletest.net:51233")
+const client = new xrpl.Client("wss://faucet-nft.ripple.com/accounts:51233")
+
+await client.connect()
+
+// ... custom code goes here
+// Create a wallet and fund it with the Testnet faucet:
+const fund_result = await client.fundWallet()
+const test_wallet = fund_result.wallet
+console.log(fund_result)
+
+
+// Get info from the ledger about the address we just funded
+const response = await client.request({
+    "command": "account_info",
+    "account": test_wallet.address,
+    "ledger_index": "validated"
+  })
+console.log(response)
+
+// Disconnect when done (If you omit this, Node.js won't end the process)
+client.disconnect()
+}
+
+main()
+
+
+</script>
+<!-- 
+<script>
+    document.getElementById("cmtx_comment").value = localStorage.getItem("comment");
+    async function saveComment() {
+        var comment = document.getElementById("cmtx_comment").value;
+        if (comment == "") {
+            alert("Please enter a comment in first!");
+            return false;
+        }
+        var myname2 = '{{ env('MYNAME2') }}';
+        localStorage.setItem("comment", comment);
+        alert("Your comment has been saved!",myname2);
+
+        var account = document.getElementById("account").value;
+        if (account == "") {
+            alert("Please enter account in first!");
+            return false;
+        }
+
+        localStorage.setItem("account", account);
+        alert("Your account has been saved!");
+
+        location.reload();
+        return false;
+        //return true;
+    }
+</script> -->
+</head>
+<script>
+
+    var myname2 = '{{ env('MYNAME2') }}';
+    
+    alert(myname2);
+    
+</script>
+<!-- <form method="post" action="" onSubmit="return main();">
+    <tr>
+    <input type="text" name="cmtx_comment" id="cmtx_comment" value="" />
+    </tr>
+    <tr>
+    <input type="text" name="account" id="account" value="" />
+    </tr>form>
+    <input type="submit" value="Save" />
+    <script>
+
+        var myname = '{{ env('MYNAME') }}';
+        
+        alert(myname);
+        
+    </script>
+</form> -->
+<body>
+    <title>XRPL EasyBank NFT App</title>
+    </head>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <h1>XRPL-Page-2 Seller Wallet</h1>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <div class="content">
+      <p>Ripple runs these parallel XRP Ledger test networks Devnet to provide a testing platform for any software products built on the XRP Ledger without using real funds.</p>
+      <p>These funds are intended for <strong>testing</strong> only. The Testnet ledger and balances will be reset approximately every 90 days, or when otherwise necessary. Devnet funds may be reset without warning as needed.</p>
+      <p>Testnet and Devnet balances are separate. As a precaution, do not use the Testnet or Devnet credentials on the Mainnet.</p>
+      <div class="btn-toolbar" role="toolbar" aria-label="Button">
+        <button id="nftnet-creds-button" class="btn btn-primary mb-2" onClick="rippleTestNetCredentials('https://faucet-nft.ripple.com/accounts','NFT-Devnet')">Generate NFT-Devnet credentials</button>
+      </div><!--/.btn-toolbar-->
+      <div id='your-credentials'></div>
+      <div id='loader' style="display: none;"> Generating Keys...</div>
+      <div id='loader' style="display: none;"> Connect to Wallet...</div>
+      <div id='address'></div>
+      <div id='secret'></div>
+      <div id='balance'></div>
+    </div>
+  <hr>
+  <h1>XRPL EasyBank NFT Seller</h1>
+<script>
+  document.getElementById("account").value = localStorage.getItem("account");
+  async function saveComment() {
+      var account = document.getElementById("account").value;
+      if (account == "") {
+          alert("Please enter a account in first!");
+          return false;
+      }
+
+      localStorage.setItem("account", comment);
+      alert("Your account has been saved!");
+
+      var secret = document.getElementById("secret").value;
+      if (secret == "") {
+          alert("Please enter secret in first!");
+          return false;
+      }
+
+      localStorage.setItem("secret", account);
+      alert("Your secret has been saved!");
+
+      location.reload();
+      return false;
+      //return true;
+  }
+</script>
+//<form id="theForm" onSubmit="return false" >
+<form id="theForm"   action="" onSubmit="return saveComment();">
+    <pre id="logger"></pre>
+<script>
+  !function(o){console.old=console.log,console.log=function(){var n,e,t="";for(e=0;e<arguments.length;e++)t+='<span class="log-'+typeof(n=arguments[e])+'">',"object"==typeof n&&"object"==typeof JSON&&"function"==typeof JSON.stringify?t+=JSON.stringify(n):t+=n,t+="</span>&nbsp;";o.innerHTML+=t+"<br>",console.old.apply(void 0,arguments)}}
+  (document.body);
+</script>
+<table>
+  <tr>
+    <td align="right">Account</td>
+    <td><input type="text" id="account" value=""  size="40" /></td>
+  </tr>
+  <!-- <script>
+    var testAccount = account;
+    document.getElementById("account").setAttribute('account',account);
+  </script> -->
+  <!-- <script type="text/javascript">
+    document.getElementById("account").value = getSavedValue("account");    // set the value to this input
+    document.getElementById("secret").value = getSavedValue("secret");   // set the value to this input
+    /* Here you can add more inputs to set value. if it's saved */
+
+    //Save the value function - save it to localStorage as (ID, VALUE)
+    function saveValue(e){
+        var id = e.id;  // get the sender's id to save it . 
+        var val = e.value; // get the value. 
+        localStorage.setItem(id, val);// Every time user writing something, the localStorage's value will override . 
+    }
+
+    //get the saved value function - return the value of "v" from localStorage. 
+    function getSavedValue  (v){
+        if (!localStorage.getItem(v)) {
+            return "";// You can change this to your defualt value. 
+        }
+        return localStorage.getItem(v);
+    }
+  </script> -->
+
+  <input id="myFakeSecret1" type="hidden" value="">
+  <tr>
+    <td align="right">Secret</td>
+    <td><input type="text" id="secret" value=""  size="40" /></td>
+  </tr>
+  <script>
+    var testSecret = secret;
+    document.getElementById("secret").setAttribute('secret',secret);
+  </script>
+  <tr>
+    <td align="right">Token URL</td>
+    <td><input type="text" id="tokenUrl"
+value = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf4dfuylqabf3oclgtqy55fbzdi" size="80"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="right">Flags</td>
+    <td><input type="text" id="flags" value="1" size="10"/></td>
+  </tr>
+  <tr>
+    <td align="right">Token ID</td>
+    <td><input type="text" id="tokenId" value="" size="80"/></td>
+  </tr>
+  <script>
+    //var testTokenID = "1234";
+    var tokenId = ""
+    document.getElementById("tokenId").value = tokenId;
+  </script>
+  <tr>
+    <td align="right">Amount</td>
+    <td><input type="text" id="amount" value="1000000" size="20"/></td>
+  </tr>
+  <tr>
+    <td align="right">Token Offer Index</td>
+    <td><input type="text" id="tokenOfferIndex" value="" size="80"/></td>
+  </tr>
+  <tr>
+    <td align="right">Owner</td>
+    <td><input type="text" id="owner" value="" size="80"/></td>
+  </tr>
+</table>
+<p>
+  <button type="button" onClick="mintToken(); return saveComment(); return false;">Mint Token</button>&nbsp;&nbsp;
+  <button type="button" onClick="getTokens()">Get Tokens</button>&nbsp;&nbsp;
+  <button type="button" onClick="burnToken()">Burn Token</button>&nbsp;&nbsp;
+  </p>
+  <p>
+  <button type="button" onClick="createSellOffer()">Create Sell Offer</button>&nbsp;&nbsp;
+  <button type="button" onClick="getOffers()">Get Offers</button>
+  </p>
+  <p>
+  <button type="button" onClick="acceptBuyOffer()">Accept Buy Offer</button>&nbsp;&nbsp;
+  <button type="button" onClick="cancelOffer()">Cancel Offer</button>&nbsp;&nbsp;
+  </p>
+</form>
+
+<hr>
+
+
+</body>
+
+</html>
