@@ -3,237 +3,28 @@
 <script src='https://unpkg.com/xrpl@2.1.0-beta.1'></script>
 <script>
 if (typeof module !== "undefined") var xrpl = require('xrpl')
+// $("#Formid").submit(function (e) {
+//    loadAjax();
+//    //e.preventDefault(); // or return false;
+//    return false;
+// });
+document.getElementById("account").value = localStorage.getItem("account");
 
-
-rewireLoggingToElement(
-    () => document.getElementById("log"),
-    () => document.getElementById("log-container"), true);
-
-function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
-    fixLoggingFunc('log');
-    fixLoggingFunc('debug');
-    fixLoggingFunc('warn');
-    fixLoggingFunc('error');
-    fixLoggingFunc('info');
-
-    function fixLoggingFunc(name) {
-        console['old' + name] = console[name];
-        console[name] = function(...arguments) {
-            const output = produceOutput(name, arguments);
-            const eleLog = eleLocator();
-
-            if (autoScroll) {
-                const eleContainerLog = eleOverflowLocator();
-                const isScrolledToBottom = eleContainerLog.scrollHeight - eleContainerLog.clientHeight <= eleContainerLog.scrollTop + 1;
-                eleLog.innerHTML += output + "<br>";
-                if (isScrolledToBottom) {
-                    eleContainerLog.scrollTop = eleContainerLog.scrollHeight - eleContainerLog.clientHeight;
-                }
-            } else {
-                eleLog.innerHTML += output + "<br>";
-            }
-
-            console['old' + name].apply(undefined, arguments);
-        };
+function saveUserInput() {
+    var account = document.getElementById("account").value;
+    if (account == "") {
+        alert("Please enter account input first!");
+        return false;
     }
 
-    function produceOutput(name, args) {
-        return args.reduce((output, arg) => {
-            return output +
-                "<span class=\"log-" + (typeof arg) + " log-" + name + "\">" +
-                    (typeof arg === "object" && (JSON || {}).stringify ? JSON.stringify(arg) : arg) +
-                "</span>&nbsp;";
-        }, '');
-    }
+    localStorage.setItem("account", account);
+    alert("Your account has been saved!");
+    
+    location.reload();
+    return false;
+    //return true;
 }
 
-
-// setInterval(() => {
-//   const method = (['log', 'debug', 'warn', 'error', 'info'][Math.floor(Math.random() * 5)]);
-//   console[method](method, 'logging something...');
-// }, 200);
-
-
-// console.log = function(message) {
-//     document.getElementById('result').innerHTML = message;
-// };
-// console.log('your result');
-function logThis(message) {
-  // if we pass an Error object, message.stack will have all the details, otherwise give us a string
-  if (typeof message === 'object') {
-    message = message.stack || objToString(message);
-  }
-
-  console.log(message);
-
-  // create the message line with current time
-  var today = new Date();
-  var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-  var time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
-  var dateTime = date + ' ' + time + ' ';
-
-  //insert line
-  document.getElementById('logger').insertAdjacentHTML('afterbegin', dateTime + message + '<br>');
-}
-
-function objToString(obj) {
-  var str = 'Object: ';
-  for (var p in obj) {
-    if (obj.hasOwnProperty(p)) {
-      str += p + '::' + obj[p] + ',\n';
-    }
-  }
-  return str;
-}
-
-// Logger BOWER
-(function initConsoleLogDiv() {
-  'use strict';
-
-
-  if (console.log.toDiv) {
-    return;
-  }
-
-  function toString(x) {
-    if (x instanceof Error) {
-      return x.message;
-    }
-    return typeof x === 'string' ? x : JSON.stringify(x);
-  }
-
-  var log = console.log.bind(console);
-  var error = console.error.bind(console);
-  var warn = console.warn.bind(console);
-  var table = console.table ? console.table.bind(console) : null;
-  var id = 'console-log-div';
-
-  function createOuterElement() {
-    var outer = document.getElementById(id);
-    if (!outer) {
-      outer = document.createElement('fieldset');
-      outer.id = id;
-      document.body.appendChild(outer);
-    }
-    outer.classList.add(id);
-
-    var style = outer.style;
-    // style.width = '100%';
-    // style.minHeight = '200px';
-    style.fontFamily = 'monospace';
-    style.marginTop = '20px';
-    style.marginLeft = '10px';
-    style.marginRight = '10px';
-    style.whiteSpace = 'pre';
-    style.border = '1px solid black';
-    style.borderRadius = '5px';
-    style.padding = '5px 10px';
-    return outer;
-  }
-
-  var logTo = (function createLogDiv() {
-
-    var outer = createOuterElement();
-
-    var caption = document.createTextNode('console output');
-    var legend = document.createElement('legend');
-    legend.appendChild(caption);
-    outer.appendChild(legend);
-
-    var div = document.createElement('div');
-    div.id = 'console-log-text';
-    outer.appendChild(div);
-
-    return div;
-  }());
-
-  function printToDiv() {
-    var msg = Array.prototype.slice.call(arguments, 0)
-      .map(toString)
-      .join(' ');
-    var text = logTo.textContent;
-    logTo.textContent = text + msg + '\n';
-  }
-
-  function logWithCopy() {
-    log.apply(null, arguments);
-    printToDiv.apply(null, arguments);
-  }
-
-  console.log = logWithCopy;
-  console.log.toDiv = true;
-
-  console.error = function errorWithCopy() {
-    error.apply(null, arguments);
-    var args = Array.prototype.slice.call(arguments, 0);
-    args.unshift('ERROR:');
-    printToDiv.apply(null, args);
-  };
-
-  console.warn = function logWarning() {
-    warn.apply(null, arguments);
-    var args = Array.prototype.slice.call(arguments, 0);
-    args.unshift('WARNING:');
-    printToDiv.apply(null, args);
-  };
-
-  function printTable(objArr, keys) {
-
-    var numCols = keys.length;
-    var len = objArr.length;
-    var $table = document.createElement('table');
-    $table.style.width = '100%';
-    $table.setAttribute('border', '1');
-    var $head = document.createElement('thead');
-    var $tdata = document.createElement('td');
-    $tdata.innerHTML = 'Index';
-    $head.appendChild($tdata);
-
-    for (var k = 0; k < numCols; k++) {
-      $tdata = document.createElement('td');
-      $tdata.innerHTML = keys[k];
-      $head.appendChild($tdata);
-    }
-    $table.appendChild($head);
-
-    for (var i = 0; i < len; i++) {
-      var $line = document.createElement('tr');
-      $tdata = document.createElement('td');
-      $tdata.innerHTML = i;
-      $line.appendChild($tdata);
-
-      for (var j = 0; j < numCols; j++) {
-        $tdata = document.createElement('td');
-        $tdata.innerHTML = objArr[i][keys[j]];
-        $line.appendChild($tdata);
-      }
-      $table.appendChild($line);
-    }
-    var div = document.getElementById('console-log-text');
-    div.appendChild($table);
-  }
-
-  console.table = function logTable() {
-    if (typeof table === 'function') {
-      table.apply(null, arguments);
-    }
-
-    var objArr = arguments[0];
-    var keys;
-
-    if (typeof objArr[0] !== 'undefined') {
-      keys = Object.keys(objArr[0]);
-    }
-    printTable(objArr, keys);
-  };
-
-  window.addEventListener('error', function (err) {
-    printToDiv( 'EXCEPTION:', err.message + '\n  ' + err.filename, err.lineno + ':' + err.colno);
-  });
-
-}());
-
-// Logger
 (function (logger) {
     console.old = console.log;
     console.log = function () {
@@ -280,9 +71,7 @@ async function wait_for_seq(network_url, address) {
       await new Promise(resolve => setTimeout(resolve, 1000))
     }
   }
-  console.log("\n\n----------------Get XRPL NFT Seller's Wallet Account Info----------------")
-  console.log(JSON.stringify(response, null, 2))
-  
+  console.log(response)
   $("#sequence").html('<h3>Sequence Number</h3> '+response.result.account_data.Sequence)
   api.disconnect()
 }
@@ -314,8 +103,8 @@ function rippleTestNetCredentials(url, altnet_name) {
     success: function(data) {
       //hide the loader and show results
       loader.hide();
-      credentials.hide().html('<h2>Your '+altnet_name+' Wallet Credentials</h2>').fadeIn('fast')
-      address.hide().html('<h3>Account Address</h3> ' +
+      credentials.hide().html('<h2>Your '+altnet_name+' Credentials</h2>').fadeIn('fast')
+      address.hide().html('<h3>Address</h3> ' +
         data.account.address).fadeIn('fast')
       secret.hide().html('<h3>Secret</h3> ' +
         data.account.secret).fadeIn('fast')
@@ -326,29 +115,6 @@ function rippleTestNetCredentials(url, altnet_name) {
         wait_for_seq("wss://s.altnet.rippletest.net:51233", data.account.address)
       } else if (altnet_name=="NFT-Devnet") {
         wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", data.account.address)
-        if (typeof data.account.address !== 'undefined') {
-          $('#account').val(data.account.address);
-        } else {
-          document.getElementById('account').value = ""
-        }
-
-        if (typeof data.account.secret !== 'undefined') {
-          $('#secret1').val(data.account.secret);
-        } else {
-          document.getElementById('secret1').value = ""
-        }
-        if (typeof data.balance !== 'undefined') {
-          $('#balance1').val(data.balance);
-        } else {
-          document.getElementById('secret1').value = ""
-        }
-        // $('#account').val(data.account.address);
-        // $('#secret1').val(data.account.secret);
-        console.log("\n\n----------------Connect XRPL NFT Seller's Wallet----------------")
-        console.log("data.account.address = ", data.account.address)
-        // console.log("#account = ", $('#account'))
-        console.log("data.account.secret = ", data.account.secret)
-        // console.log("#secret1 = ", $('#secret1'))
       } else {
         wait_for_seq("wss://s.devnet.rippletest.net:51233", data.account.address)
       }
@@ -359,7 +125,6 @@ function rippleTestNetCredentials(url, altnet_name) {
       alert("There was an error with the "+altnet_name+" faucet. Please try again.");
     }
   })
-
 }
 
 $(document).ready(function() {
@@ -382,18 +147,17 @@ $(document).ready(function() {
 })
 
 
-
 //***************************
 //** Mint Token *************
 //***************************
 
 async function mintToken() {
-	const wallet = xrpl.Wallet.fromSeed(secret1.value)
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	
-	console.log("\n\n----------------Mint Token----------------")
-    
+  console.log("User Clicked on MintToken Button")
+	console.log("Connected to Sandbox")
+
 	// Note that you must convert the token URL to a hexadecimal
 	// value for this transaction.
 	// ----------------------------------------------------------
@@ -411,16 +175,17 @@ async function mintToken() {
 		method: "account_nfts",
 		account: wallet.classicAddress
 	})
-	// console.log(nfts)
-  console.log(JSON.stringify(nfts, null, 2))
+	console.log(nfts)
+  // Display console log response in web page
+  //alert(nfts)
+
 	// Check transaction results -------------------------------------------------
 	console.log("Transaction result:", tx.result.meta.TransactionResult)
 	console.log("Balance changes:",
 	  JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
-  // REMAINING BALANCE
-  // console.log("Remaining Balance:",
-	//   JSON.stringify(xrpl.getBalance(tx.result.meta), null, 2))  
+
 	client.disconnect()
+    //return false;
 } //End of mintToken
 
 //***************************
@@ -428,16 +193,15 @@ async function mintToken() {
 //***************************
 
 async function getTokens() {
-	const wallet = xrpl.Wallet.fromSeed(secret1.value)
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("\n\n----------------Get Tokens----------------")
+	console.log("Connected to Sandbox")
 	const nfts = await client.request({
 		method: "account_nfts",
 		account: wallet.classicAddress
 	})
-	// console.log(nfts)
-  console.log(JSON.stringify(nfts, null, 2))
+	console.log(nfts)
 	client.disconnect()
 } //End of getTokens
 
@@ -446,12 +210,11 @@ async function getTokens() {
 //***************************
 
 async function burnToken() {
-  const wallet = xrpl.Wallet.fromSeed(secret1.value)
+  const wallet = xrpl.Wallet.fromSeed(secret.value)
   const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
   await client.connect()
-  
-  console.log("\n\n----------------Burn Token----------------")
-  
+  console.log("Connected to Sandbox")
+
   // Prepare transaction -------------------------------------------------------
   const transactionBlob = {
       "TransactionType": "NFTokenBurn",
@@ -466,6 +229,7 @@ async function burnToken() {
 	account: wallet.classicAddress
   })
   console.log(nfts)
+  
   // Check transaction results -------------------------------------------------
   console.log("Transaction result:", tx.result.meta.TransactionResult)
   console.log("Balance changes:",
@@ -479,11 +243,11 @@ async function burnToken() {
 //********************************
 
 async function createSellOffer() {
-	const wallet = xrpl.Wallet.fromSeed(secret1.value)
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("\n\n----------------Create Sell Offer----------------")
-    
+	console.log("Connected to Sandbox")
+
  // Prepare transaction -------------------------------------------------------
   const transactionBlob = {
       	"TransactionType": "NFTokenCreateOffer",
@@ -537,9 +301,8 @@ async function createBuyOffer() {
 	const wallet = xrpl.Wallet.fromSeed(secret.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
+	console.log("Connected to Sandbox")
 
-    console.log("\n\n----------------Create buy Offer----------------")
-    
  // Prepare transaction -------------------------------------------------------
   const transactionBlob = {
       	"TransactionType": "NFTokenCreateOffer",
@@ -591,12 +354,11 @@ async function createBuyOffer() {
 
 async function cancelOffer() {
 
-	const wallet = xrpl.Wallet.fromSeed(secret1.value)
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	
-    console.log("\n\n----------------Cancel Offer----------------")
-    
+	console.log("Connected to Sandbox")
+
 	const tokenID = tokenOfferIndex.value
 	const tokenIDs = [tokenID]
 
@@ -649,11 +411,10 @@ async function cancelOffer() {
 
 async function getOffers() {
 
-	const wallet = xrpl.Wallet.fromSeed(secret1.value)
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("\n\n----------------Get Offers----------------")
-
+	console.log("Connected to Sandbox")
     console.log("***Sell Offers***")
     let nftSellOffers
       try {
@@ -664,9 +425,7 @@ async function getOffers() {
 	  } catch (err) {
 	    console.log("No sell offers.")
 	}
-    if(typeof nftSellOffers !== 'undefined') {
-        console.log(JSON.stringify(nftSellOffers,null,2))
-    }
+    console.log(JSON.stringify(nftSellOffers,null,2))
     console.log("***Buy Offers***")
     let nftBuyOffers
     try {
@@ -676,10 +435,7 @@ async function getOffers() {
     } catch (err) {
       console.log("No buy offers.")
   }
-  if(typeof nftBuyOffers !== 'undefined') {
-        console.log(JSON.stringify(nftBuyOffers,null,2))
-    }
-  // console.log(JSON.stringify(nftBuyOffers,null,2))
+  console.log(JSON.stringify(nftBuyOffers,null,2))
   client.disconnect()
   // End of getOffers()
 }
@@ -689,10 +445,10 @@ async function getOffers() {
 
 async function acceptSellOffer() {
 
-	const wallet = xrpl.Wallet.fromSeed(secret1.value)
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("\n\n----------------Accept Sell Offer----------------")
+	console.log("Connected to Sandbox")
 
  // Prepare transaction -------------------------------------------------------
   const transactionBlob = {
@@ -722,10 +478,10 @@ async function acceptSellOffer() {
 
 async function acceptBuyOffer() {
 
-	const wallet = xrpl.Wallet.fromSeed(secret1.value)
+	const wallet = xrpl.Wallet.fromSeed(secret.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("\n\n----------------Accept Buy Offer----------------")
+	console.log("Connected to Sandbox")
 
  // Prepare transaction -------------------------------------------------------
   const transactionBlob = {
@@ -751,19 +507,53 @@ async function acceptBuyOffer() {
 }
 </script>
 
-<title>XRPL NFT Market Place </title>
+<!-- <script>
+  // Run on page load
+  window.onload = function() {
+
+      // If sessionStorage is storing default values (ex. name), exit the function and do not restore data
+      if (sessionStorage.getItem('account') == "") {
+          return;
+      }
+
+      // If values are not blank, restore them to the fields
+      var name = sessionStorage.getItem('account');
+      if (name !== null) $('#inputAccount').val(account);
+
+      var email = sessionStorage.getItem('secret');
+      if (email !== null) $('#inputSecret').val(secret);
+
+      var subject= sessionStorage.getItem('tokenUrl');
+      if (subject!== null) $('#inputTokenUrl').val(tokenUrl);
+
+      var message= sessionStorage.getItem('amount');
+      if (message!== null) $('#inputAmount').val(amount);
+  }
+
+  // Before refreshing the page, save the form data to sessionStorage
+  window.onbeforeunload = function() {
+      sessionStorage.setItem("account", $('#inputAccount').val());
+      sessionStorage.setItem("secret", $('#inputSecret').val());
+      sessionStorage.setItem("tokenUrl", $('#inputTokenUrl').val());
+      sessionStorage.setItem("amount", $('#inputAmount').val());
+  }
+</script> -->
+<title>XRPL EasyBank NFT App</title>
 </head>
 <body>
-    <h1>XRPL Account Wallet Info</h1>
+
+
+    <h1>XRP Faucets</h1>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <div class="content">
       <p>Ripple runs these parallel XRP Ledger test networks Devnet to provide a testing platform for any software products built on the XRP Ledger without using real funds.</p>
-      <p>These funds are intended for <strong>testing</strong> only.</p>
+      <p>These funds are intended for <strong>testing</strong> only. The Testnet ledger and balances will be reset approximately every 90 days, or when otherwise necessary. Devnet funds may be reset without warning as needed.</p>
+      <p>Testnet and Devnet balances are separate. As a precaution, do not use the Testnet or Devnet credentials on the Mainnet.</p>
       <div class="btn-toolbar" role="toolbar" aria-label="Button">
-        <button id="nftnet-creds-button" class="btn btn-primary mb-2" onClick="rippleTestNetCredentials('https://faucet-nft.ripple.com/accounts','NFT-Devnet')">Connect XRPL NFT Seller's Wallet</button>
+        <button id="nftnet-creds-button" class="btn btn-primary mb-2" onClick="rippleTestNetCredentials('https://faucet-nft.ripple.com/accounts','NFT-Devnet')">Generate NFT-Devnet credentials</button>
       </div><!--/.btn-toolbar-->
       <div id='your-credentials'></div>
-      <div id='loader' style="display: none;"> Getting Wallet Credentials...</div>
+      <div id='loader' style="display: none;"> Generating Keys...</div>
       <div id='loader' style="display: none;"> Connect to Wallet...</div>
       <div id='address'></div>
       <div id='secret'></div>
@@ -773,33 +563,79 @@ async function acceptBuyOffer() {
   <hr>
 
 
-<h1>XRPL NFT Seller Wallet</h1>
-<form id="theForm">
+<h1>XRPL EasyBank NFT Seller</h1>
+<script>
+  document.getElementById("account").value = localStorage.getItem("account");
+  async function saveComment() {
+      var account = document.getElementById("account").value;
+      if (account == "") {
+          alert("Please enter a account in first!");
+          return false;
+      }
 
+      localStorage.setItem("account", account);
+      alert("Your account has been saved!");
+
+      var secret = document.getElementById("secret").value;
+      if (secret == "") {
+          alert("Please enter secret in first!");
+          return false;
+      }
+
+      localStorage.setItem("secret", secret);
+      alert("Your secret has been saved!");
+
+      location.reload();
+      return false;
+      //return true;
+  }
+</script>
+<form id="theForm" onSubmit="return false" >
+
+    <pre id="logger"></pre>
+<script>
+  !function(o){console.old=console.log,console.log=function(){var n,e,t="";for(e=0;e<arguments.length;e++)t+='<span class="log-'+typeof(n=arguments[e])+'">',"object"==typeof n&&"object"==typeof JSON&&"function"==typeof JSON.stringify?t+=JSON.stringify(n):t+=n,t+="</span>&nbsp;";o.innerHTML+=t+"<br>",console.old.apply(void 0,arguments)}}
+  (document.body);
+</script>
 <table>
   <tr>
     <td align="right">Account</td>
     <td><input type="text" id="account" value=""  size="40" /></td>
   </tr>
   <!-- <script>
-    if (typeof $('#address') !== 'undefined') {
-      document.getElementById('account').value = $('#address') 
-    } else {
-      document.getElementById('account').value = ""
+    var testAccount = account;
+    document.getElementById("account").setAttribute('account',account);
+  </script> -->
+  <!-- <script type="text/javascript">
+    document.getElementById("account").value = getSavedValue("account");    // set the value to this input
+    document.getElementById("secret").value = getSavedValue("secret");   // set the value to this input
+    /* Here you can add more inputs to set value. if it's saved */
+
+    //Save the value function - save it to localStorage as (ID, VALUE)
+    function saveValue(e){
+        var id = e.id;  // get the sender's id to save it . 
+        var val = e.value; // get the value. 
+        localStorage.setItem(id, val);// Every time user writing something, the localStorage's value will override . 
+    }
+
+    //get the saved value function - return the value of "v" from localStorage. 
+    function getSavedValue  (v){
+        if (!localStorage.getItem(v)) {
+            return "";// You can change this to your defualt value. 
+        }
+        return localStorage.getItem(v);
     }
   </script> -->
+
+  <input id="myFakeSecret1" type="hidden" value="">
   <tr>
     <td align="right">Secret</td>
-    <td><input type="text" id="secret1" value="" size="40" /></td>
+    <td><input type="text" id="secret" value=""  size="40" /></td>
   </tr>
-  <!-- <script>
-    // $('#secret1').val(secret);
-    // if (typeof $('#secret') !== 'undefined') {
-    //   document.getElementById('secret1').value = $('#secret')
-    // } else {
-    //   document.getElementById('secret1').value = ""
-    // }
-  </script> -->
+  <script>
+    var testSecret = secret;
+    document.getElementById("secret").setAttribute('secret',secret);
+  </script>
   <tr>
     <td align="right">Token URL</td>
     <td><input type="text" id="tokenUrl"
@@ -814,13 +650,14 @@ value = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf4dfuylqabf3oclgtqy55fbzdi" siz
     <td align="right">Token ID</td>
     <td><input type="text" id="tokenId" value="" size="80"/></td>
   </tr>
+  <script>
+    //var testTokenID = "1234";
+    var tokenId = ""
+    document.getElementById("tokenId").value = tokenId;
+  </script>
   <tr>
-    <td align="right">Balance</td>
-    <td><input type="text" id="balance1" value="" size="20"/></td>
-  </tr>
-  <tr>
-    <td align="right">Amount (Sell/Buy Offer</td>
-    <td><input type="text" id="amount" value="" size="20"/></td>
+    <td align="right">Amount</td>
+    <td><input type="text" id="amount" value="1000000" size="20"/></td>
   </tr>
   <tr>
     <td align="right">Token Offer Index</td>
@@ -838,19 +675,15 @@ value = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf4dfuylqabf3oclgtqy55fbzdi" siz
   </p>
   <p>
   <button type="button" onClick="createSellOffer()">Create Sell Offer</button>&nbsp;&nbsp;
-  <button type="button" onClick="createBuyOffer()">Create Buy Offer</button>&nbsp;&nbsp;
   <button type="button" onClick="getOffers()">Get Offers</button>
   </p>
   <p>
-  <button type="button" onClick="acceptSellOffer()">Accept Sell Offer</button>&nbsp;&nbsp;
   <button type="button" onClick="acceptBuyOffer()">Accept Buy Offer</button>&nbsp;&nbsp;
   <button type="button" onClick="cancelOffer()">Cancel Offer</button>&nbsp;&nbsp;
   </p>
 </form>
+
 <hr>
-<div id="log-container">
-    <pre id="log"></pre>
-  </div>
+
 </body>
 </html>
-
