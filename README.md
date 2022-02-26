@@ -18,7 +18,9 @@ node xrpl-nft-buyer.js  <br />
 
 
 ## Demo Screens
+### Demo Screen 1:  Shows Successful Connection to Seller's XRPL Wallet
 ![image info](./images/image1.png)
 <br />
 
+### Demo Screen 2:  Shows Successful Minting of Token (ML PDF Report)
 ![image info](./images/image2.png)
