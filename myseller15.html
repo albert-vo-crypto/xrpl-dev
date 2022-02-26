@@ -280,7 +280,7 @@ async function wait_for_seq(network_url, address) {
       await new Promise(resolve => setTimeout(resolve, 1000))
     }
   }
-  console.log("\n\n----------------Get XRPL NFT Seller Account Info----------------")
+  console.log("\n\n----------------Get XRPL NFT Seller's Wallet Credentials----------------")
   console.log(response)
   $("#sequence").html('<h3>Sequence Number</h3> '+response.result.account_data.Sequence)
   api.disconnect()
@@ -325,8 +325,20 @@ function rippleTestNetCredentials(url, altnet_name) {
         wait_for_seq("wss://s.altnet.rippletest.net:51233", data.account.address)
       } else if (altnet_name=="NFT-Devnet") {
         wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", data.account.address)
-        $('#account').val(data.account.address);
-        $('#secret1').val(data.account.secret);
+        if (typeof data.account.address !== 'undefined') {
+          $('#account').val(data.account.address);
+        } else {
+          document.getElementById('account').value = ""
+        }
+
+        if (typeof data.account.secret !== 'undefined') {
+          $('#secret1').val(data.account.secret);
+        } else {
+          document.getElementById('secret1').value = ""
+        }
+        // $('#account').val(data.account.address);
+        // $('#secret1').val(data.account.secret);
+        console.log("\n\n----------------Get XRPL NFT Seller's Wallet Account Info----------------")
         console.log("data.account.address = ", data.account.address)
         // console.log("#account = ", $('#account'))
         console.log("data.account.secret = ", data.account.secret)
@@ -754,36 +766,31 @@ async function acceptBuyOffer() {
 
 <h1>XRPL NFT Seller Wallet</h1>
 <form id="theForm">
-<p>
-<button type="button" onClick="mintToken()">Mint Token</button>&nbsp;&nbsp;
-<button type="button" onClick="getTokens()">Get Tokens</button>&nbsp;&nbsp;
-<button type="button" onClick="burnToken()">Burn Token</button>&nbsp;&nbsp;
-</p>
-<p>
-<button type="button" onClick="createSellOffer()">Create Sell Offer</button>&nbsp;&nbsp;
-<button type="button" onClick="createBuyOffer()">Create Buy Offer</button>&nbsp;&nbsp;
-<button type="button" onClick="getOffers()">Get Offers</button>
-</p>
-<p>
-<button type="button" onClick="acceptSellOffer()">Accept Sell Offer</button>&nbsp;&nbsp;
-<button type="button" onClick="acceptBuyOffer()">Accept Buy Offer</button>&nbsp;&nbsp;
-<button type="button" onClick="cancelOffer()">Cancel Offer</button>&nbsp;&nbsp;
-</p>
+
 <table>
   <tr>
     <td align="right">Account</td>
-    <td><input type="text" id="account" value="" size="40" /></td>
+    <td><input type="text" id="account" value=""  size="40" /></td>
   </tr>
-  <script>
-    document.getElementById('account').value = $('#account')
-  </script>
+  <!-- <script>
+    if (typeof $('#address') !== 'undefined') {
+      document.getElementById('account').value = $('#address') 
+    } else {
+      document.getElementById('account').value = ""
+    }
+  </script> -->
   <tr>
     <td align="right">Secret</td>
     <td><input type="text" id="secret1" value="" size="40" /></td>
   </tr>
-  <script>
-    $('#secret1').val(secret);
-  </script>
+  <!-- <script>
+    // $('#secret1').val(secret);
+    // if (typeof $('#secret') !== 'undefined') {
+    //   document.getElementById('secret1').value = $('#secret')
+    // } else {
+    //   document.getElementById('secret1').value = ""
+    // }
+  </script> -->
   <tr>
     <td align="right">Token URL</td>
     <td><input type="text" id="tokenUrl"
@@ -811,6 +818,21 @@ value = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf4dfuylqabf3oclgtqy55fbzdi" siz
     <td><input type="text" id="owner" value="" size="80"/></td>
   </tr>
 </table>
+<p>
+  <button type="button" onClick="mintToken()">Mint Token</button>&nbsp;&nbsp;
+  <button type="button" onClick="getTokens()">Get Tokens</button>&nbsp;&nbsp;
+  <button type="button" onClick="burnToken()">Burn Token</button>&nbsp;&nbsp;
+  </p>
+  <p>
+  <button type="button" onClick="createSellOffer()">Create Sell Offer</button>&nbsp;&nbsp;
+  <button type="button" onClick="createBuyOffer()">Create Buy Offer</button>&nbsp;&nbsp;
+  <button type="button" onClick="getOffers()">Get Offers</button>
+  </p>
+  <p>
+  <button type="button" onClick="acceptSellOffer()">Accept Sell Offer</button>&nbsp;&nbsp;
+  <button type="button" onClick="acceptBuyOffer()">Accept Buy Offer</button>&nbsp;&nbsp;
+  <button type="button" onClick="cancelOffer()">Cancel Offer</button>&nbsp;&nbsp;
+  </p>
 </form>
 <hr>
 <div id="log-container">
