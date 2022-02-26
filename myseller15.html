@@ -325,8 +325,8 @@ function rippleTestNetCredentials(url, altnet_name) {
         wait_for_seq("wss://s.altnet.rippletest.net:51233", data.account.address)
       } else if (altnet_name=="NFT-Devnet") {
         wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", data.account.address)
-        // $('#account').val(data.account.address);
-        // $('#secret1').val(data.account.secret);
+        $('#account').val(data.account.address);
+        $('#secret1').val(data.account.secret);
         console.log("data.account.address = ", data.account.address)
         // console.log("#account = ", $('#account'))
         console.log("data.account.secret = ", data.account.secret)
