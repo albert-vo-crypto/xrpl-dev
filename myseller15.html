@@ -337,6 +337,11 @@ function rippleTestNetCredentials(url, altnet_name) {
         } else {
           document.getElementById('secret1').value = ""
         }
+        if (typeof data.balance !== 'undefined') {
+          $('#balance1').val(data.balance);
+        } else {
+          document.getElementById('secret1').value = ""
+        }
         // $('#account').val(data.account.address);
         // $('#secret1').val(data.account.secret);
         console.log("\n\n----------------Connect XRPL NFT Seller's Wallet----------------")
@@ -807,8 +812,12 @@ value = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf4dfuylqabf3oclgtqy55fbzdi" siz
     <td><input type="text" id="tokenId" value="" size="80"/></td>
   </tr>
   <tr>
-    <td align="right">Amount</td>
-    <td><input type="text" id="amount" value="1000000" size="20"/></td>
+    <td align="right">Balance</td>
+    <td><input type="text" id="balance" value="" size="20"/></td>
+  </tr>
+  <tr>
+    <td align="right">Amount (Sell/Buy Offer</td>
+    <td><input type="text" id="amount" value="" size="20"/></td>
   </tr>
   <tr>
     <td align="right">Token Offer Index</td>
