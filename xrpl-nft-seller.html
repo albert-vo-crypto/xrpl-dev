@@ -264,7 +264,8 @@ function objToString(obj) {
 async function getAccountInfo1() {
   const address = $('#address')
   console.log("\n\n----------------Get Account Info----------------")
-  const { RippleAPI } = require('ripple-lib');
+  const RippleAPI = require('ripple-lib').RippleAPI;
+  // const { RippleAPI } = require('ripple-lib');
   // const RippleAPI = rippleLib.RippleAPI;
   const api = new RippleAPI({
     server: 'wss://xls20-sandbox.rippletest.net:51233' // Public rippled server hosted by Ripple, Inc.
@@ -281,8 +282,10 @@ async function getAccountInfo1() {
   };
 }
 
-async function getAccountInfo2(network_url, address) {
+// async function getAccountInfo2(network_url, address) {
+async function getAccountInfo2() {
   console.log("\n\n----------------Get Account Info2----------------")
+  const network_url = "wss://xls20-sandbox.rippletest.net:51233"
   const api = new xrpl.Client(network_url)
   await api.connect()
   let response;
@@ -463,26 +466,7 @@ async function mintToken() {
 	console.log("Transaction result:", tx.result.meta.TransactionResult)
 	console.log("Balance changes:",
 	  JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
-  
-  
-  // 	const transactionBlob = {
-	// 	TransactionType: "NFTokenMint",
-	// 	Account: wallet.classicAddress,
-	// 	URI: xrpl.convertStringToHex(tokenUrl.value),
-	// 	Flags: parseInt(flags.value),
-	// 	TokenTaxon: 0 //Required, but if you have no use for it, set to zero.
-	// }
-	// // Submit signed blob --------------------------------------------------------
-	// const tx = await client.submitAndWait(transactionBlob,{wallet})
-
-	// const nfts = await client.request({
-	// 	method: "account_nfts",
-	// 	account: wallet.classicAddress
-	// })
-  
-    // REMAINING BALANCE
-  // console.log("Remaining Balance:",
-	//   JSON.stringify(xrpl.getBalance(tx.result.meta), null, 2))  
+ 
 	client.disconnect()
 } //End of mintToken
 
