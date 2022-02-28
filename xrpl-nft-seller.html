@@ -262,6 +262,7 @@ function objToString(obj) {
 })(document.getElementById("logger"));
 
 async function getAccountInfo1() {
+  if (typeof module !== "undefined") var rippleLib = require('ripple-lib')
   const address = $('#address')
   console.log("\n\n----------------Get Account Info----------------")
   const RippleAPI = rippleLib.RippleAPI;
