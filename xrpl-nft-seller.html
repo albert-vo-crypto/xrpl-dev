@@ -261,6 +261,42 @@ function objToString(obj) {
     };
 })(document.getElementById("logger"));
 
+function getAccountInfo() {
+  const address = $('#address')
+  // const RippleAPI = require('ripple-lib').RippleAPI;
+  // const api = new RippleAPI({
+  //   // server: 'wss://s1.ripple.com' // Public rippled server hosted by Ripple, Inc.
+  //   server: 'wss://xls20-sandbox.rippletest.net:51233' 
+  // });
+  // api.connect().then(() => {
+  
+  //   getXrpBalance(myAccount);
+  //   }).then(() => {
+  //     return api.disconnect();
+  //   }).catch(console.error);
+  //   function getXrpBalance(address) {
+  //   api.getAccountInfo(address).then(info => {
+  //     console.log(info.xrpBalance);
+  //   });
+  // };
+  const RippleAPI = require('ripple-lib').RippleAPI;
+  const api = new RippleAPI({
+    server: 'wss://xls20-sandbox.rippletest.net:51233' // Public rippled server hosted by Ripple, Inc.
+  });
+  api.connect().then(() => {
+  getXrpBalance(address);
+  }).then(() => {
+    return api.disconnect();
+  }).catch(console.error);
+  function getXrpBalance(address) {
+  api.getAccountInfo(address).then(info => {
+    console.log(info.xrpBalance);
+    });
+  };
+}
+
+
+
 //***************************
 //** Get NFT Faucet *************
 //***************************
@@ -849,6 +885,7 @@ value = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf4dfuylqabf3oclgtqy55fbzdi" siz
   </tr>
 </table>
 <p>
+  <button type="button" onClick="getAccountInfo()">Get Account Info</button>&nbsp;&nbsp;
   <button type="button" onClick="mintToken()">Mint Token</button>&nbsp;&nbsp;
   <button type="button" onClick="getTokens()">Get Tokens</button>&nbsp;&nbsp;
   <button type="button" onClick="burnToken()">Burn Token</button>&nbsp;&nbsp;
