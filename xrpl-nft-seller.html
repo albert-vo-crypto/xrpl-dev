@@ -263,24 +263,9 @@ function objToString(obj) {
 
 async function getAccountInfo1() {
   const address = $('#address')
-  // const RippleAPI = require('ripple-lib').RippleAPI;
-  // const api = new RippleAPI({
-  //   // server: 'wss://s1.ripple.com' // Public rippled server hosted by Ripple, Inc.
-  //   server: 'wss://xls20-sandbox.rippletest.net:51233' 
-  // });
-  // api.connect().then(() => {
-  
-  //   getXrpBalance(myAccount);
-  //   }).then(() => {
-  //     return api.disconnect();
-  //   }).catch(console.error);
-  //   function getXrpBalance(address) {
-  //   api.getAccountInfo(address).then(info => {
-  //     console.log(info.xrpBalance);
-  //   });
-  // };
   console.log("\n\n----------------Get Account Info----------------")
-  const RippleAPI = rippleLib.RippleAPI;
+  const { RippleAPI } = require('ripple-lib');
+  // const RippleAPI = rippleLib.RippleAPI;
   const api = new RippleAPI({
     server: 'wss://xls20-sandbox.rippletest.net:51233' // Public rippled server hosted by Ripple, Inc.
   });
