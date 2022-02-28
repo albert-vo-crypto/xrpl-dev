@@ -501,7 +501,9 @@ async function mintToken() {
 	console.log("Transaction result:", tx.result.meta.TransactionResult)
 	console.log("Balance changes:",
 	  JSON.stringify(xrpl.getBalanceChanges(tx.result.meta), null, 2))
- 
+  
+  // Get Account Info to update Balance after Minting Token
+  getAccountInfo4()
 	client.disconnect()
 } //End of mintToken
 
