@@ -3,7 +3,7 @@
 <script src='https://unpkg.com/xrpl@2.1.0-beta.1'></script>
 <script>
 if (typeof module !== "undefined") var xrpl = require('xrpl')
-if (typeof module !== "undefined") var rippleLib = require('ripple-lib')
+// if (typeof module !== "undefined") var rippleLib = require('ripple-lib')
 
 rewireLoggingToElement(
     () => document.getElementById("log"),
@@ -409,7 +409,6 @@ function rippleTestNetCredentials(url, altnet_name) {
       alert("There was an error with the "+altnet_name+" faucet. Please try again.");
     }
   })
-
 }
 
 $(document).ready(function() {
