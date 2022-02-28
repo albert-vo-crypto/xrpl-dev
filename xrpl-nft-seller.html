@@ -430,7 +430,7 @@ async function getAccountInfo() {
 	const wallet = xrpl.Wallet.fromSeed(secret1.value)
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
-	console.log("\n\n----------------Get Account Info4----------------")
+	console.log("\n\n----------------Get Account Info----------------")
 	// const nfts = await client.request({
   const my_account_info = await client.request({
 		method: "account_info",
@@ -448,26 +448,9 @@ async function getAccountInfo() {
           // document.getElementById('account').value = ""
         }
 	client.disconnect()
-} //End of getTokens
+} //End of getAccountInfo
 
 
-// //***************************
-// //** Get Account Info3 *************
-// //***************************
-// async function getAccountInfo3(network_url2, address2) {
-//   console.log("\n\n----------------Get Account Info3----------------")
-//   const address = $('#address')
-
-//   // if (typeof data.account.address !== 'undefined') {
-//   //         $('#account').val(data.account.address);
-//   //       } else {
-//   //         document.getElementById('account').value = ""
-//   //       }
-//   console.log("\n\n----------------Connect XRPL NFT Seller's Wallet----------------")
-//   console.log("address = ", address)
-//   wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", address)
-
-// }
 //***************************
 //** Mint Token *************
 //***************************
