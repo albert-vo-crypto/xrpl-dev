@@ -430,12 +430,15 @@ async function getAccountInfo4() {
 	const client = new xrpl.Client("wss://xls20-sandbox.rippletest.net:51233")
 	await client.connect()
 	console.log("\n\n----------------Get Account Info4----------------")
-	const nfts = await client.request({
+	// const nfts = await client.request({
+  const my_account_info = await client.request({
 		method: "account_info",
 		account: wallet.classicAddress
 	})
 	// console.log(nfts)
-  console.log(JSON.stringify(nfts, null, 2))
+  console.log(JSON.stringify(my_account_info, null, 2))
+  console.log("my_account_info.account_data.Balance = ")
+  console.log(JSON.stringify(my_account_info.account_data.Balance, null, 2))
 	client.disconnect()
 } //End of getTokens
 
