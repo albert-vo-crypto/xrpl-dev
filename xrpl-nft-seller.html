@@ -48,16 +48,6 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
 }
 
 
-// setInterval(() => {
-//   const method = (['log', 'debug', 'warn', 'error', 'info'][Math.floor(Math.random() * 5)]);
-//   console[method](method, 'logging something...');
-// }, 200);
-
-
-// console.log = function(message) {
-//     document.getElementById('result').innerHTML = message;
-// };
-// console.log('your result');
 function logThis(message) {
   // if we pass an Error object, message.stack will have all the details, otherwise give us a string
   if (typeof message === 'object') {
@@ -450,23 +440,23 @@ async function getAccountInfo4() {
 } //End of getTokens
 
 
-//***************************
-//** Get Account Info3 *************
-//***************************
-async function getAccountInfo3(network_url2, address2) {
-  console.log("\n\n----------------Get Account Info3----------------")
-  const address = $('#address')
+// //***************************
+// //** Get Account Info3 *************
+// //***************************
+// async function getAccountInfo3(network_url2, address2) {
+//   console.log("\n\n----------------Get Account Info3----------------")
+//   const address = $('#address')
 
-  // if (typeof data.account.address !== 'undefined') {
-  //         $('#account').val(data.account.address);
-  //       } else {
-  //         document.getElementById('account').value = ""
-  //       }
-  console.log("\n\n----------------Connect XRPL NFT Seller's Wallet----------------")
-  console.log("address = ", address)
-  wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", address)
+//   // if (typeof data.account.address !== 'undefined') {
+//   //         $('#account').val(data.account.address);
+//   //       } else {
+//   //         document.getElementById('account').value = ""
+//   //       }
+//   console.log("\n\n----------------Connect XRPL NFT Seller's Wallet----------------")
+//   console.log("address = ", address)
+//   wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", address)
 
-}
+// }
 //***************************
 //** Mint Token *************
 //***************************
