@@ -261,47 +261,47 @@ function objToString(obj) {
     };
 })(document.getElementById("logger"));
 
-async function getAccountInfo1() {
-  if (typeof module !== "undefined") var rippleLib = require('ripple-lib')
-  const address = $('#address')
-  console.log("\n\n----------------Get Account Info----------------")
-  const RippleAPI = rippleLib.RippleAPI;
-  // const { RippleAPI } = require('ripple-lib');
-  // const RippleAPI = rippleLib.RippleAPI;
-  const api = new RippleAPI({
-    server: 'wss://xls20-sandbox.rippletest.net:51233' // Public rippled server hosted by Ripple, Inc.
-  });
-  api.connect().then(() => {
-  getXrpBalance(address);
-  }).then(() => {
-    return api.disconnect();
-  }).catch(console.error);
-  function getXrpBalance(address) {
-  api.getAccountInfo(address).then(info => {
-    console.log(info.xrpBalance);
-    });
-  };
-}
+// async function getAccountInfo1() {
+//   if (typeof module !== "undefined") var rippleLib = require('ripple-lib')
+//   const address = $('#address')
+//   console.log("\n\n----------------Get Account Info----------------")
+//   const RippleAPI = rippleLib.RippleAPI;
+//   // const { RippleAPI } = require('ripple-lib');
+//   // const RippleAPI = rippleLib.RippleAPI;
+//   const api = new RippleAPI({
+//     server: 'wss://xls20-sandbox.rippletest.net:51233' // Public rippled server hosted by Ripple, Inc.
+//   });
+//   api.connect().then(() => {
+//   getXrpBalance(address);
+//   }).then(() => {
+//     return api.disconnect();
+//   }).catch(console.error);
+//   function getXrpBalance(address) {
+//   api.getAccountInfo(address).then(info => {
+//     console.log(info.xrpBalance);
+//     });
+//   };
+// }
 
-async function getAccountInfo2(network_url, address) {
-//async function getAccountInfo2() {
-  console.log("\n\n----------------Get Account Info2----------------")
-  const network_url = "wss://xls20-sandbox.rippletest.net:51233"
-  const api = new xrpl.Client(network_url)
-  await api.connect()
-  let response;
-  while (true) {
-    try {
-      response = await api.request({
-        command: "account_info",
-        account: address,
-        ledger_index: "validated"
-      })
-      break
-    } catch(e) {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-    }
-  }
+// async function getAccountInfo2(network_url, address) {
+// //async function getAccountInfo2() {
+//   console.log("\n\n----------------Get Account Info2----------------")
+//   const network_url = "wss://xls20-sandbox.rippletest.net:51233"
+//   const api = new xrpl.Client(network_url)
+//   await api.connect()
+//   let response;
+//   while (true) {
+//     try {
+//       response = await api.request({
+//         command: "account_info",
+//         account: address,
+//         ledger_index: "validated"
+//       })
+//       break
+//     } catch(e) {
+//       await new Promise(resolve => setTimeout(resolve, 1000))
+//     }
+//   }
   
   console.log("\n\n----------------Get XRPL NFT Seller's Wallet Account Info----------------")
   console.log(JSON.stringify(response, null, 2))
@@ -895,9 +895,9 @@ value = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf4dfuylqabf3oclgtqy55fbzdi" siz
   </tr>
 </table>
 <p>
-  <button type="button" onClick="getAccountInfo1()">Get Account Info1</button>&nbsp;&nbsp;
+  <!-- <button type="button" onClick="getAccountInfo1()">Get Account Info1</button>&nbsp;&nbsp;
   <!-- <button type="button" onClick="getAccountInfo2('wss://xls20-sandbox.rippletest.net:51233', $('#address'))">Get Account Info2</button>&nbsp;&nbsp; -->
-  <button type="button" onClick="getAccountInfo2('wss://xls20-sandbox.rippletest.net:51233', account)">Get Account Info3</button>&nbsp;&nbsp;
+  <button type="button" onClick="getAccountInfo2('wss://xls20-sandbox.rippletest.net:51233', account)">Get Account Info3</button>&nbsp;&nbsp; -->
   <!-- <button type="button" onClick="getAccountInfo3()">Get Account Info2</button>&nbsp;&nbsp; -->
   <button type="button" onClick="mintToken()">Mint Token</button>&nbsp;&nbsp;
   <button type="button" onClick="getTokens()">Get Tokens</button>&nbsp;&nbsp;
