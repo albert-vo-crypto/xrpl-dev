@@ -310,20 +310,7 @@ async function getAccountInfo2(network_url, address) {
   api.disconnect()
 }
 
-async function getAccountInfo3(network_url, address) {
-  console.log("\n\n----------------Get Account Info3----------------")
-  const address = $('#address')
 
-  if (typeof data.account.address !== 'undefined') {
-          $('#account').val(data.account.address);
-        } else {
-          document.getElementById('account').value = ""
-        }
-        console.log("\n\n----------------Connect XRPL NFT Seller's Wallet----------------")
-        console.log("data.account.address = ", data.account.address)
-  wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", data.account.address)
-
-}
 //***************************
 //** Get NFT Faucet *************
 //***************************
@@ -444,8 +431,23 @@ $(document).ready(function() {
   $('#nftnet-creds-button').click(nftnet_click)
 })
 
+//***************************
+//** Get Account Info3 *************
+//***************************
+async function getAccountInfo3(network_url2, address2) {
+  console.log("\n\n----------------Get Account Info3----------------")
+  const address = $('#address')
 
+  // if (typeof data.account.address !== 'undefined') {
+  //         $('#account').val(data.account.address);
+  //       } else {
+  //         document.getElementById('account').value = ""
+  //       }
+  console.log("\n\n----------------Connect XRPL NFT Seller's Wallet----------------")
+  console.log("address = ", address)
+  wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", address)
 
+}
 //***************************
 //** Mint Token *************
 //***************************
