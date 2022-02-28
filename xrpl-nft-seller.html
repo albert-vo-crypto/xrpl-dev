@@ -433,20 +433,20 @@ $(document).ready(function() {
 //***************************
 //** Get Account Info3 *************
 //***************************
-// async function getAccountInfo3(network_url2, address2) {
-//   console.log("\n\n----------------Get Account Info3----------------")
-//   const address = $('#address')
+async function getAccountInfo3(network_url2, address2) {
+  console.log("\n\n----------------Get Account Info3----------------")
+  const address = $('#address')
 
-//   // if (typeof data.account.address !== 'undefined') {
-//   //         $('#account').val(data.account.address);
-//   //       } else {
-//   //         document.getElementById('account').value = ""
-//   //       }
-//   console.log("\n\n----------------Connect XRPL NFT Seller's Wallet----------------")
-//   console.log("address = ", address)
-//   wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", address)
+  // if (typeof data.account.address !== 'undefined') {
+  //         $('#account').val(data.account.address);
+  //       } else {
+  //         document.getElementById('account').value = ""
+  //       }
+  console.log("\n\n----------------Connect XRPL NFT Seller's Wallet----------------")
+  console.log("address = ", address)
+  wait_for_seq("wss://xls20-sandbox.rippletest.net:51233", address)
 
-// }
+}
 //***************************
 //** Mint Token *************
 //***************************
@@ -896,7 +896,7 @@ value = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf4dfuylqabf3oclgtqy55fbzdi" siz
 <p>
   <!-- <button type="button" onClick="getAccountInfo1()">Get Account Info1</button>&nbsp;&nbsp;
   <!-- <button type="button" onClick="getAccountInfo2('wss://xls20-sandbox.rippletest.net:51233', $('#address'))">Get Account Info2</button>&nbsp;&nbsp; -->
-  <button type="button" onClick="getAccountInfo2('wss://xls20-sandbox.rippletest.net:51233', account)">Get Account Info3</button>&nbsp;&nbsp; -->
+  <button type="button" onClick="getAccountInfo3('wss://xls20-sandbox.rippletest.net:51233', account)">Get Account Info3</button>&nbsp;&nbsp; -->
   <!-- <button type="button" onClick="getAccountInfo3()">Get Account Info2</button>&nbsp;&nbsp; -->
   <button type="button" onClick="mintToken()">Mint Token</button>&nbsp;&nbsp;
   <button type="button" onClick="getTokens()">Get Tokens</button>&nbsp;&nbsp;
