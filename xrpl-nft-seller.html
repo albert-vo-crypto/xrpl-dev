@@ -439,6 +439,13 @@ async function getAccountInfo4() {
   console.log(JSON.stringify(my_account_info, null, 2))
   console.log("my_account_info.result.account_data.Balance = ")
   console.log(JSON.stringify(my_account_info.result.account_data.Balance, null, 2))
+
+  if (typeof my_account_info.result.account_data.Balance !== 'undefined') {
+          $('#balance').val(my_account_info.result.account_data.Balance);
+        } else {
+          console.log(" ERROR:  my_account_info.result.account_data.Balance is UNDEFINED")
+          // document.getElementById('account').value = ""
+        }
 	client.disconnect()
 } //End of getTokens
 
