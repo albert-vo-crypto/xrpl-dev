@@ -3,7 +3,7 @@
 <script src='https://unpkg.com/xrpl@2.1.0-beta.1'></script>
 <script>
 if (typeof module !== "undefined") var xrpl = require('xrpl')
-if (typeof module !== "undefined") var ripple-lib = require('ripple-lib')
+if (typeof module !== "undefined") var rippleLib = require('ripple-lib')
 
 rewireLoggingToElement(
     () => document.getElementById("log"),
@@ -280,7 +280,7 @@ async function getAccountInfo1() {
   //   });
   // };
   console.log("\n\n----------------Get Account Info----------------")
-  const RippleAPI = ripple-lib.RippleAPI;
+  const RippleAPI = rippleLib.RippleAPI;
   const api = new RippleAPI({
     server: 'wss://xls20-sandbox.rippletest.net:51233' // Public rippled server hosted by Ripple, Inc.
   });
