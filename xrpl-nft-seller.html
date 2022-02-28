@@ -3,7 +3,7 @@
 <script src='https://unpkg.com/xrpl@2.1.0-beta.1'></script>
 <script>
 if (typeof module !== "undefined") var xrpl = require('xrpl')
-
+if (typeof module !== "undefined") var ripple-lib = require('ripple-lib')
 
 rewireLoggingToElement(
     () => document.getElementById("log"),
@@ -280,7 +280,7 @@ async function getAccountInfo1() {
   //   });
   // };
   console.log("\n\n----------------Get Account Info----------------")
-  const RippleAPI = require('ripple-lib').RippleAPI;
+  const RippleAPI = ripple-lib.RippleAPI;
   const api = new RippleAPI({
     server: 'wss://xls20-sandbox.rippletest.net:51233' // Public rippled server hosted by Ripple, Inc.
   });
@@ -910,8 +910,9 @@ value = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf4dfuylqabf3oclgtqy55fbzdi" siz
   </tr>
 </table>
 <p>
-  <button type="button" onClick="getAccountInfo()">Get Account Info1</button>&nbsp;&nbsp;
-  <button type="button" onClick="getAccountInfo2('wss://xls20-sandbox.rippletest.net:51233', $('#address'))">Get Account Info2</button>&nbsp;&nbsp;
+  <button type="button" onClick="getAccountInfo1()">Get Account Info1</button>&nbsp;&nbsp;
+  <!-- <button type="button" onClick="getAccountInfo2('wss://xls20-sandbox.rippletest.net:51233', $('#address'))">Get Account Info2</button>&nbsp;&nbsp; -->
+  <button type="button" onClick="getAccountInfo2()">Get Account Info2</button>&nbsp;&nbsp;
   <button type="button" onClick="mintToken()">Mint Token</button>&nbsp;&nbsp;
   <button type="button" onClick="getTokens()">Get Tokens</button>&nbsp;&nbsp;
   <button type="button" onClick="burnToken()">Burn Token</button>&nbsp;&nbsp;
